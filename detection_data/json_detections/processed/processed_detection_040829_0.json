@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-10-11T04:08:29.962612",
+  "source": "camera_gate_1",
+  "truck_detections": [
+    {
+      "truck_id": "TRUCK_565",
+      "event_type": "gate_in",
+      "location": "Gate 2",
+      "license_plate": "ABC146",
+      "driver_name": "John Smith",
+      "company": "Logistics Inc",
+      "notes": "Automated camera detection"
+    }
+  ],
+  "safety_violations": [
+    {
+      "violation_type": "overspeed",
+      "severity": "low",
+      "location": "Loading Zone A",
+      "description": "Safety violation detected - Speeding"
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6 text-cyan">
+                <i class="fas fa-tachometer-alt me-2"></i>Operations Dashboard
+            </h1>
+            <p class="text-muted">Real-time tracking of ongoing events | Live View</p>
+        </div>
+        <div class="col-auto">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-clock me-2 text-cyan"></i>
+                    <span id="current-time">{{ current_time|date:"H:i:s" }}</span>
+                    <span class="status-indicator status-active ms-2"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Active Trucks</div>
+                <div class="kpi-value">{{ active_trucks.count }}</div>
+                <small class="text-success">+3 this hour</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Active Alerts</div>
+                <div class="kpi-value">{{ active_alerts.count }}</div>
+                <small class="text-warning">2 critical</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Dock Utilization</div>
+                <div class="kpi-value">
+                    {% with total_util=0 %}
+                    {% for dock in docks %}
+                    {% widthratio dock.utilization_rate 1 1 as util %}
+                    {% endfor %}
+                    {{ docks.0.utilization_rate|default:0 }}%
+                    {% endwith %}
+                </div>
+                <small class="text-info">Optimal</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Avg Turnaround</div>
+                <div class="kpi-value">45m</div>
+                <small class="text-success">-5m vs target</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Map & Timeline -->
+        <div class="col-lg-8">
+            <!-- Map View -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>Real-time Yard Layout</h5>
+                    <div class="btn-group">
+                        <button class="btn btn-cyan btn-sm"><i class="fas fa-sync me-1"></i>Refresh</button>
+                        <button class="btn btn-outline-cyan btn-sm"><i class="fas fa-expand me-1"></i>Fullscreen</button>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <div class="text-center py-5">
+                        <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">Live Interactive Yard Map</h6>
+                        <p class="text-muted mb-4">Real-time positioning of trucks and equipment</p>
+                        
+                        <!-- Simplified Map Visualization -->
+                        <div class="row justify-content-center">
+                            {% for dock in docks %}
+                            <div class="col-auto mb-3">
+                                <div class="text-center">
+                                    <div class="p-3 border rounded {% if dock.is_occupied %}bg-warning text-dark{% else %}bg-success{% endif %}" 
+                                         style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                        {{ dock.dock_id }}
+                                    </div>
+                                    <small class="text-muted mt-1 d-block">
+                                        {% if dock.is_occupied %}Occupied{% else %}Available{% endif %}
+                                    </small>
+                                    <small class="text-info">{{ dock.utilization_rate }}% util</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Turnaround Timeline -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-stream me-2"></i>Live Turnaround Timeline</h5>
+                    <button class="btn btn-outline-cyan btn-sm" onclick="refreshTimeline()">
+                        <i class="fas fa-sync me-1"></i>Refresh
+                    </button>
+                </div>
+                <div id="timeline-container" style="max-height: 400px; overflow-y: auto;">
+                    {% for data in timeline_data %}
+                    <div class="timeline-event">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <strong class="text-cyan">{{ data.truck.truck_id }}</strong>
+                                    <span class="badge {% if data.truck.current_status == 'departed' %}bg-success{% elif data.truck.current_status == 'delayed' %}bg-danger{% else %}bg-warning{% endif %}">
+                                        {{ data.truck.get_current_status_display }}
+                                    </span>
+                                </div>
+                                <div class="small text-muted">
+                                    {% for event in data.events %}
+                                    <span class="me-3">
+                                        <i class="fas fa-arrow-right me-1 text-info"></i>
+                                        {{ event.get_event_type_display }} 
+                                        <span class="text-amber">({{ event.timestamp|time }})</span>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Metrics & Alerts -->
+        <div class="col-lg-4">
+            <!-- Alerts Panel -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-bell me-2 text-amber"></i>Alerts & Notifications</h5>
+                    <span class="badge bg-danger">{{ active_alerts.count }}</span>
+                </div>
+                <div id="alerts-container" style="max-height: 300px; overflow-y: auto;">
+                    {% for alert in active_alerts %}
+                    <div class="alert {% if alert.priority == 'critical' %}alert-critical{% elif alert.priority == 'high' %}alert-warning{% else %}alert-info{% endif %} mb-2 p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong>{{ alert.title }}</strong>
+                                    <small class="text-muted">{{ alert.timestamp|time }}</small>
+                                </div>
+                                <p class="mb-1 small">{{ alert.message }}</p>
+                                {% if alert.related_truck %}
+                                <small class="text-muted">
+                                    <i class="fas fa-truck me-1"></i>Truck: {{ alert.related_truck.truck_id }}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                        <p class="text-muted mb-0">No active alerts</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Resource Allocation -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-cogs me-2"></i>Resource Allocation</h5>
+                
+                <!-- Dock Utilization -->
+                <div class="mb-4">
+                    <h6 class="text-cyan mb-3">Dock Utilization</h6>
+                    {% for dock in docks %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">Dock {{ dock.dock_id }}</span>
+                        <div class="d-flex align-items-center" style="width: 120px;">
+                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                <div class="progress-bar {% if dock.utilization_rate > 80 %}bg-danger{% elif dock.utilization_rate > 60 %}bg-warning{% else %}bg-success{% endif %}" 
+                                     style="width: {{ dock.utilization_rate }}%"></div>
+                            </div>
+                            <small class="text-muted" style="min-width: 30px;">{{ dock.utilization_rate|floatformat:0 }}%</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Equipment Status -->
+                <div>
+                    <h6 class="text-cyan mb-3">Equipment Status</h6>
+                    {% for eq in equipment %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center">
+                            <i class="fas 
+                                {% if eq.equipment_type == 'forklift' %}fa-truck-loading 
+                                {% elif eq.equipment_type == 'crane' %}fa-compress-alt 
+                                {% else %}fa-truck-moving{% endif %} 
+                                me-2 text-info"></i>
+                            <span class="small">{{ eq.equipment_id }}</span>
+                        </div>
+                        <span class="badge {% if eq.status == 'active' %}bg-success{% elif eq.status == 'maintenance' %}bg-danger{% else %}bg-secondary{% endif %}">
+                            {{ eq.get_status_display }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Event Feed -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-rss me-2"></i>Live Event Feed</h5>
+                    <button class="btn btn-outline-cyan btn-sm" onclick="clearEventFeed()">
+                        <i class="fas fa-trash me-1"></i>Clear
+                    </button>
+                </div>
+                <div id="event-feed" style="max-height: 300px; overflow-y: auto;">
+                    {% for event in recent_events %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <div class="small text-muted">
+                            <i class="fas fa-clock me-1"></i>{{ event.timestamp|time }}
+                        </div>
+                        <div class="fw-bold text-cyan">{{ event.truck.truck_id }}</div>
+                        <div class="small">
+                            <i class="fas fa-{{ event.event_type|default:'info-circle' }} me-1 text-info"></i>
+                            {{ event.get_event_type_display }} at {{ event.location }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Auto-refresh for real-time updates
+function updateDashboard() {
+    // Update time
+    const now = new Date();
+    document.getElementById('current-time').textContent = 
+        now.getHours().toString().padStart(2, '0') + ':' + 
+        now.getMinutes().toString().padStart(2, '0') + ':' + 
+        now.getSeconds().toString().padStart(2, '0');
+    
+    // Fetch new events and alerts
+    fetch('/api/live-events/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('New events:', data.events);
+        });
+    
+    fetch('/api/alerts/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('New alerts:', data.alerts);
+        });
+}
+
+function refreshTimeline() {
+    location.reload();
+}
+
+function clearEventFeed() {
+    document.getElementById('event-feed').innerHTML = 
+        '<div class="text-center py-4 text-muted">' +
+        '<i class="fas fa-check-circle mb-2"></i><br>Event feed cleared' +
+        '</div>';
+}
+
+// Update every 5 seconds
+setInterval(updateDashboard, 5000);
+
+// Initial call
+updateDashboard();
+</script>
+{% endblock %}

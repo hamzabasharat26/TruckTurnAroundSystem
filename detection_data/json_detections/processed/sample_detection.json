@@ -1,0 +1,30 @@
+{
+  "truck_detections": [
+    {
+      "truck_id": "TRUCK_001",
+      "event_type": "gate_in",
+      "location": "Gate 1",
+      "license_plate": "ABC123",
+      "driver_name": "John Smith",
+      "company": "Logistics Inc",
+      "notes": "Automatic gate entry detection"
+    },
+    {
+      "truck_id": "TRUCK_002",
+      "event_type": "docked",
+      "location": "Bay 3",
+      "license_plate": "XYZ789",
+      "driver_name": "Mike Johnson",
+      "company": "Transport Co",
+      "notes": "Docked at bay 3"
+    }
+  ],
+  "safety_violations": [
+    {
+      "violation_type": "no_ppe",
+      "severity": "medium",
+      "location": "Loading Zone A",
+      "description": "Worker without helmet detected"
+    }
+  ]
+}

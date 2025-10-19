@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6 text-cyan">
+                <i class="fas fa-chart-line me-2"></i>Executive Dashboard
+            </h1>
+            <p class="text-muted">High-level Analytics, Trends & ROI | {{ date_range }}</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Overall Efficiency</div>
+                <div class="kpi-value text-cyan">{{ efficiency_index }}%</div>
+                <small class="text-success">+8% vs last month</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Avg Delay</div>
+                <div class="kpi-value text-cyan">{{ avg_turnaround_time }}m</div>
+                <small class="text-success">-12m vs target</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Cost Savings</div>
+                <div class="kpi-value text-cyan">${{ cost_savings }}</div>
+                <small class="text-success">+15% ROI</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-muted">Productivity</div>
+                <div class="kpi-value text-cyan">94%</div>
+                <small class="text-warning">-2% vs target</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Trends -->
+        <div class="col-lg-8">
+            <!-- Productivity Trend -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-trend-up me-2"></i>Productivity Trend (Weekly)</h5>
+                <div id="productivity-chart" class="py-4">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <p>Weekly productivity trend chart showing improvement over time</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Comparison -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-chart-bar me-2"></i>Predicted vs Actual Performance</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="kpi-card">
+                            <div class="text-muted">Predicted</div>
+                            <div class="kpi-value text-amber">89%</div>
+                            <small>Based on historical data</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="kpi-card">
+                            <div class="text-muted">Actual</div>
+                            <div class="kpi-value text-cyan">92%</div>
+                            <small class="text-success">+3% above prediction</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Analytics -->
+        <div class="col-lg-4">
+            <!-- ROI Impact -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-dollar-sign me-2 text-success"></i>ROI Impact Analysis</h5>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Cost Reduction</span>
+                        <span class="fw-bold text-success">${{ cost_savings|add:1250 }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Efficiency Gains</span>
+                        <span class="fw-bold text-info">+18%</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-info" style="width: 78%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Delay Reduction</span>
+                        <span class="fw-bold text-warning">-45%</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Predictive Analytics Summary -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-brain me-2 text-cyan"></i>AI Insights</h5>
+                <div class="alert alert-info">
+                    <div class="fw-bold">Expected Improvement Next Month: +8%</div>
+                    <small class="text-muted">Based on current trends and predictive models</small>
+                </div>
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Optimization Potential</span>
+                        <span class="fw-bold text-success">High</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Risk Level</span>
+                        <span class="fw-bold text-success">Low</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Recommendation Confidence</span>
+                        <span class="fw-bold text-cyan">92%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Analysis -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-calculator me-2"></i>Cost of Idle Time</h5>
+                <div class="text-center py-3">
+                    <div class="kpi-value text-danger">$2,847</div>
+                    <small class="text-muted">Monthly cost reduction from reduced idle time</small>
+                </div>
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between">
+                        <span>Previous Month</span>
+                        <span>$3,450</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Current Month</span>
+                        <span>$2,847</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-success">
+                        <span>Savings</span>
+                        <span>+$603</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

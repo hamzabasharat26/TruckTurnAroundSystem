@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-10-11T04:08:29.963655",
+  "source": "camera_gate_1",
+  "truck_detections": [
+    {
+      "truck_id": "TRUCK_509",
+      "event_type": "departed",
+      "location": "Bay 4",
+      "license_plate": "ABC749",
+      "driver_name": "Sarah Wilson",
+      "company": "Logistics Inc",
+      "notes": "Automated camera detection"
+    }
+  ],
+  "safety_violations": [
+    {
+      "violation_type": "zone_breach",
+      "severity": "low",
+      "location": "Loading Zone A",
+      "description": "Safety violation detected - Restricted area"
+    }
+  ]
+}

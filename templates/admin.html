@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6 text-cyan">
+                <i class="fas fa-cog me-2"></i>Admin & System Settings
+            </h1>
+            <p class="text-muted">System Management, Users, and Integrations</p>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                <button class="btn btn-cyan btn-sm" onclick="exportSystemConfig()">
+                    <i class="fas fa-download me-1"></i>Export Config
+                </button>
+                <button class="btn btn-success btn-sm" onclick="backupSystem()">
+                    <i class="fas fa-database me-1"></i>Backup System
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: User Management -->
+        <div class="col-lg-6">
+            <!-- User Management -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>User Management</h5>
+                    <button class="btn btn-cyan btn-sm" onclick="showAddUserModal()">
+                        <i class="fas fa-plus me-1"></i>Add User
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Last Login</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-cyan">admin</td>
+                                <td>admin@gmail.com</td>
+                                <td><span class="badge bg-danger">Administrator</span></td>
+                                <td>Today, 08:30</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-1" onclick="editUser('admin')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm me-1" onclick="resetPassword('admin')">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-cyan">ops_user</td>
+                                <td>ops@company.com</td>
+                                <td><span class="badge bg-primary">Operations</span></td>
+                                <td>Today, 07:45</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-1" onclick="editUser('ops_user')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm me-1" onclick="resetPassword('ops_user')">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteUser('ops_user')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-cyan">supervisor_user</td>
+                                <td>supervisor@company.com</td>
+                                <td><span class="badge bg-info">Supervisor</span></td>
+                                <td>Yesterday, 18:20</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-1" onclick="editUser('supervisor_user')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm me-1" onclick="resetPassword('supervisor_user')">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteUser('supervisor_user')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-cyan">exec_user</td>
+                                <td>executive@company.com</td>
+                                <td><span class="badge bg-warning">Executive</span></td>
+                                <td>Yesterday, 16:30</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-1" onclick="editUser('exec_user')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm me-1" onclick="resetPassword('exec_user')">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteUser('exec_user')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-cyan">safety_user</td>
+                                <td>safety@company.com</td>
+                                <td><span class="badge bg-success">Safety</span></td>
+                                <td>Today, 09:15</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-1" onclick="editUser('safety_user')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm me-1" onclick="resetPassword('safety_user')">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteUser('safety_user')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Permission Management -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-user-shield me-2"></i>Permission Management</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-cyan mb-3">Role Permissions</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="opsLiveView">
+                            <label class="form-check-label" for="opsLiveView">Operations - Live View</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="supervisorShiftData">
+                            <label class="form-check-label" for="supervisorShiftData">Supervisor - Shift Data</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="executiveKPIs">
+                            <label class="form-check-label" for="executiveKPIs">Executive - KPIs</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="safetyViolations">
+                            <label class="form-check-label" for="safetyViolations">Safety - Violations</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-cyan mb-3">Data Access</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="realTimeEvents">
+                            <label class="form-check-label" for="realTimeEvents">Real-time Events</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="historicalData">
+                            <label class="form-check-label" for="historicalData">Historical Data</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" checked id="safetyReports">
+                            <label class="form-check-label" for="safetyReports">Safety Reports</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="adminFunctions">
+                            <label class="form-check-label" for="adminFunctions">Admin Functions</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button class="btn btn-cyan btn-sm" onclick="savePermissions()">
+                        <i class="fas fa-save me-1"></i>Save Permissions
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: System Settings -->
+        <div class="col-lg-6">
+            <!-- System Configuration -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-sliders-h me-2"></i>System Configuration</h5>
+                
+                <div class="mb-4">
+                    <label class="form-label text-cyan">Alert Thresholds</label>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Delay Alert</span>
+                        <input type="number" class="form-control" id="delayThreshold" value="10" placeholder="Minutes">
+                        <span class="input-group-text">min</span>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Safety Threshold</span>
+                        <input type="number" class="form-control" id="safetyThreshold" value="3" placeholder="Violations">
+                        <span class="input-group-text">per hour</span>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Equipment Alert</span>
+                        <input type="number" class="form-control" id="equipmentThreshold" value="5" placeholder="Minutes idle">
+                        <span class="input-group-text">min</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-cyan">SLA Values</label>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Target Turnaround</span>
+                        <input type="number" class="form-control" id="targetTurnaround" value="45" placeholder="Minutes">
+                        <span class="input-group-text">min</span>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Dock Utilization</span>
+                        <input type="number" class="form-control" id="dockUtilization" value="85" placeholder="Percentage">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Safety Compliance</span>
+                        <input type="number" class="form-control" id="safetyCompliance" value="95" placeholder="Percentage">
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-cyan btn-sm" onclick="saveSystemConfig()">
+                        <i class="fas fa-save me-1"></i>Save Configuration
+                    </button>
+                </div>
+            </div>
+
+            <!-- Integration Settings -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-plug me-2"></i>Integration Settings</h5>
+                
+                <div class="mb-4">
+                    <label class="form-label text-cyan">IoT/Camera Inputs</label>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" checked id="gateCamera1">
+                        <label class="form-check-label" for="gateCamera1">Gate Camera 1</label>
+                        <span class="badge bg-success ms-2">Active</span>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" checked id="yardCamera2">
+                        <label class="form-check-label" for="yardCamera2">Yard Camera 2</label>
+                        <span class="badge bg-success ms-2">Active</span>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="dockCamera3">
+                        <label class="form-check-label" for="dockCamera3">Dock Camera 3</label>
+                        <span class="badge bg-secondary ms-2">Offline</span>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" checked id="rfidReader">
+                        <label class="form-check-label" for="rfidReader">RFID Reader Gate</label>
+                        <span class="badge bg-success ms-2">Active</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-cyan">Data Export</label>
+                    <div class="btn-group w-100 mb-2">
+                        <button class="btn btn-outline-info btn-sm" onclick="exportData('pdf')">
+                            <i class="fas fa-file-pdf me-1"></i>Export PDF
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="exportData('csv')">
+                            <i class="fas fa-file-csv me-1"></i>Export CSV
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="exportData('excel')">
+                            <i class="fas fa-file-excel me-1"></i>Export Excel
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Date Range</span>
+                        <input type="date" class="form-control" id="exportStartDate">
+                        <input type="date" class="form-control" id="exportEndDate">
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-cyan btn-sm" onclick="saveIntegrationSettings()">
+                        <i class="fas fa-save me-1"></i>Save Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-heartbeat me-2"></i>System Status</h5>
+                <div class="row text-center mb-4">
+                    <div class="col-4">
+                        <div class="kpi-value text-success">100%</div>
+                        <small class="text-muted">Uptime</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="kpi-value text-info">24/7</div>
+                        <small class="text-muted">Monitoring</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="kpi-value text-cyan">0</div>
+                        <small class="text-muted">Errors</small>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success btn-sm" onclick="restartServices()">
+                        <i class="fas fa-play me-1"></i>Restart Services
+                    </button>
+                    <button class="btn btn-warning btn-sm" onclick="runDiagnostics()">
+                        <i class="fas fa-stethoscope me-1"></i>Run Diagnostics
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="showSystemLogs()">
+                        <i class="fas fa-file-alt me-1"></i>View System Logs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// User Management Functions
+function showAddUserModal() {
+    alert('Opening Add User modal...');
+}
+
+function editUser(username) {
+    alert(`Editing user: ${username}`);
+}
+
+function resetPassword(username) {
+    alert(`Resetting password for: ${username}`);
+}
+
+function deleteUser(username) {
+    if (confirm(`Are you sure you want to delete user: ${username}?`)) {
+        alert(`User ${username} deleted successfully`);
+    }
+}
+
+// System Configuration Functions
+function savePermissions() {
+    alert('Permissions saved successfully!');
+}
+
+function saveSystemConfig() {
+    const delayThreshold = document.getElementById('delayThreshold').value;
+    const safetyThreshold = document.getElementById('safetyThreshold').value;
+    alert(`System configuration saved!\nDelay Threshold: ${delayThreshold}min\nSafety Threshold: ${safetyThreshold} violations/hour`);
+}
+
+function saveIntegrationSettings() {
+    alert('Integration settings saved successfully!');
+}
+
+// Export Functions
+function exportSystemConfig() {
+    alert('Exporting system configuration...');
+}
+
+function backupSystem() {
+    alert('Starting system backup...');
+}
+
+function exportData(format) {
+    const startDate = document.getElementById('exportStartDate').value;
+    const endDate = document.getElementById('exportEndDate').value;
+    alert(`Exporting data in ${format.toUpperCase()} format from ${startDate} to ${endDate}`);
+}
+
+// System Management Functions
+function restartServices() {
+    if (confirm('Are you sure you want to restart all services?')) {
+        alert('Services restarting...');
+    }
+}
+
+function runDiagnostics() {
+    alert('Running system diagnostics...');
+}
+
+function showSystemLogs() {
+    alert('Opening system logs...');
+}
+</script>
+{% endblock %}

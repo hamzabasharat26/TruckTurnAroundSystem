@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6 text-cyan">
+                <i class="fas fa-brain me-2"></i>Predictive Analytics & AI Insights
+            </h1>
+            <p class="text-muted">Provide foresight, not just hindsight | AI-Powered Recommendations</p>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                <button class="btn btn-cyan btn-sm" onclick="downloadAnalyticsReport('pdf')">
+                    <i class="fas fa-file-pdf me-1"></i>PDF Report
+                </button>
+                <button class="btn btn-success btn-sm" onclick="downloadAnalyticsReport('csv')">
+                    <i class="fas fa-file-csv me-1"></i>CSV Export
+                </button>
+                <button class="btn btn-warning btn-sm" onclick="downloadAnalyticsReport('excel')">
+                    <i class="fas fa-file-excel me-1"></i>Excel Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Predictions -->
+        <div class="col-lg-6">
+            <!-- Delay Predictions -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2 text-amber"></i>Delay Prediction Model</h5>
+                    <span class="badge bg-info">94% Accuracy</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>Truck ID</th>
+                                <th>Delay Probability</th>
+                                <th>Expected Delay</th>
+                                <th>Risk Level</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-cyan">TRUCK_032</td>
+                                <td>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-danger" style="width: 87%"></div>
+                                    </div>
+                                    <small>87%</small>
+                                </td>
+                                <td>>10 minutes</td>
+                                <td><span class="badge bg-danger">High</span></td>
+                                <td>
+                                    <button class="btn btn-outline-warning btn-sm" onclick="rerouteTruck('TRUCK_032')">
+                                        <i class="fas fa-route me-1"></i>Reroute
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-cyan">TRUCK_045</td>
+                                <td>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                                    </div>
+                                    <small>65%</small>
+                                </td>
+                                <td>5-8 minutes</td>
+                                <td><span class="badge bg-warning">Medium</span></td>
+                                <td>
+                                    <button class="btn btn-outline-info btn-sm" onclick="notifyTeam('TRUCK_045')">
+                                        <i class="fas fa-bell me-1"></i>Notify
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-cyan">TRUCK_018</td>
+                                <td>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-info" style="width: 42%"></div>
+                                    </div>
+                                    <small>42%</small>
+                                </td>
+                                <td>2-4 minutes</td>
+                                <td><span class="badge bg-info">Low</span></td>
+                                <td>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="monitorTruck('TRUCK_018')">
+                                        <i class="fas fa-eye me-1"></i>Monitor
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Anomaly Detection -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-exclamation-triangle me-2 text-red"></i>Anomaly Detection</h5>
+                <div class="alert alert-warning mb-3">
+                    <div class="d-flex">
+                        <i class="fas fa-exclamation-circle me-2 mt-1 text-warning"></i>
+                        <div>
+                            <strong>Unusual Activity Detected</strong>
+                            <p class="mb-0 small">Truck #23 showing 45% longer loading duration than average</p>
+                            <small class="text-muted">Detected: 2 hours ago | Confidence: 92%</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <i class="fas fa-chart-line me-2 mt-1 text-info"></i>
+                        <div>
+                            <strong>Pattern Change Identified</strong>
+                            <p class="mb-0 small">Dock 4 utilization increased by 35% in last 2 hours</p>
+                            <small class="text-muted">Detected: 1 hour ago | Confidence: 88%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Recommendations & Maintenance -->
+        <div class="col-lg-6">
+            <!-- Recommendations Engine -->
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-robot me-2 text-cyan"></i>AI Recommendations</h5>
+                    <span class="badge bg-success">Active</span>
+                </div>
+                {% for recommendation in recommendations %}
+                <div class="alert alert-info mb-3">
+                    <div class="d-flex">
+                        <i class="fas fa-lightbulb me-2 mt-1 text-amber"></i>
+                        <div class="flex-grow-1">
+                            <strong>Recommendation #{{ forloop.counter }}</strong>
+                            <p class="mb-1">{{ recommendation }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">Estimated impact: +8% efficiency</small>
+                                <button class="btn btn-cyan btn-sm" onclick="implementRecommendation({{ forloop.counter }})">
+                                    <i class="fas fa-play me-1"></i>Implement
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Maintenance Prediction -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-tools me-2 text-warning"></i>Maintenance Prediction</h5>
+                {% for prediction in maintenance_predictions %}
+                <div class="alert alert-warning mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between mb-1">
+                                <strong>Maintenance Alert</strong>
+                                <span class="badge bg-danger">Urgent</span>
+                            </div>
+                            <p class="mb-1 small">{{ prediction }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">Prediction confidence: 85%</small>
+                                <button class="btn btn-outline-warning btn-sm" onclick="scheduleMaintenance('{{ prediction }}')">
+                                    <i class="fas fa-calendar me-1"></i>Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="mt-4">
+                    <h6 class="text-cyan mb-3">Equipment Health Status</h6>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Forklift #3</span>
+                            <span class="badge bg-danger">Critical</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-danger" style="width: 85%"></div>
+                        </div>
+                        <small class="text-muted">85% failure probability in 48h</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Crane #1</span>
+                            <span class="badge bg-warning">Warning</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-warning" style="width: 72%"></div>
+                        </div>
+                        <small class="text-muted">72% maintenance needed this week</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Loader #2</span>
+                            <span class="badge bg-success">Good</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: 45%"></div>
+                        </div>
+                        <small class="text-muted">45% health - Optimal condition</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Performance -->
+            <div class="dashboard-card">
+                <h5><i class="fas fa-chart-bar me-2"></i>Model Performance</h5>
+                <div class="row text-center mb-4">
+                    <div class="col-4">
+                        <div class="kpi-value text-success">94%</div>
+                        <small class="text-muted">Accuracy</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="kpi-value text-info">89%</div>
+                        <small class="text-muted">Precision</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="kpi-value text-cyan">91%</div>
+                        <small class="text-muted">Recall</small>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-cyan btn-sm" onclick="retrainModels()">
+                        <i class="fas fa-sync me-1"></i>Retrain Models
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="viewModelDetails()">
+                        <i class="fas fa-chart-bar me-1"></i>View Detailed Metrics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Replace the downloadAnalyticsReport function -->
+<script>
+function downloadAnalyticsReport(format) {
+    // Real download functionality
+    window.open(`/download/analytics-report/${format}/`, '_blank');
+}
+
+function downloadAnalyticsPDF() {
+    downloadAnalyticsReport('pdf');
+}
+
+function downloadAnalyticsCSV() {
+    downloadAnalyticsReport('csv');
+}
+
+function downloadAnalyticsExcel() {
+    downloadAnalyticsReport('excel');
+}
+
+// Update the header buttons to use real download
+<div class="col-auto">
+    <div class="btn-group">
+        <button class="btn btn-cyan btn-sm" onclick="downloadAnalyticsPDF()">
+            <i class="fas fa-file-pdf me-1"></i>PDF Report
+        </button>
+        <button class="btn btn-success btn-sm" onclick="downloadAnalyticsCSV()">
+            <i class="fas fa-file-csv me-1"></i>CSV Export
+        </button>
+        <button class="btn btn-warning btn-sm" onclick="downloadAnalyticsExcel()">
+            <i class="fas fa-file-excel me-1"></i>Excel Report
+        </button>
+    </div>
+</div>
+
+function rerouteTruck(truckId) {
+    alert(`Rerouting ${truckId} to alternative dock...`);
+}
+
+function notifyTeam(truckId) {
+    alert(`Notification sent to team about ${truckId}...`);
+}
+
+function monitorTruck(truckId) {
+    alert(`Enhanced monitoring activated for ${truckId}...`);
+}
+
+function implementRecommendation(recId) {
+    alert(`Implementing recommendation #${recId}...`);
+}
+
+function scheduleMaintenance(prediction) {
+    alert(`Scheduling maintenance: ${prediction}...`);
+}
+
+function retrainModels() {
+    alert('Initiating model retraining process...');
+}
+
+function viewModelDetails() {
+    alert('Opening detailed model performance metrics...');
+}
+</script>
+{% endblock %}

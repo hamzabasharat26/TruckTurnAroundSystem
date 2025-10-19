@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-10-11T04:08:29.963655",
+  "source": "camera_gate_1",
+  "truck_detections": [
+    {
+      "truck_id": "TRUCK_435",
+      "event_type": "docked",
+      "location": "Bay 4",
+      "license_plate": "ABC779",
+      "driver_name": "John Smith",
+      "company": "Transport Co",
+      "notes": "Automated camera detection"
+    }
+  ],
+  "safety_violations": []
+}
